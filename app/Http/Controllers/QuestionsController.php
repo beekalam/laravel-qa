@@ -12,7 +12,7 @@ class QuestionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('create', 'store', 'update','destroy');
+        $this->middleware('auth')->only('create', 'store', 'update', 'destroy');
     }
 
     /**
@@ -59,7 +59,8 @@ class QuestionsController extends Controller
      */
     public function show(Question $question)
     {
-        //
+        $question->increment('views');
+        return view('questions.show', compact('question'));
     }
 
     /**
