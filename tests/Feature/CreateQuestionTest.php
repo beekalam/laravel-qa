@@ -25,6 +25,14 @@ class CreateQuestionTest extends TestCase
     }
 
     /** @test */
+    function guests_may_not_delete_questions()
+    {
+        $question = create('App\Question', ['user_id' => create('App\User')->id]);
+        $this->delete("/questions/{$question->id}")
+             ->assertRedirect('/login');
+    }
+
+    /** @test */
     function a_question_requires_a_body()
     {
         $this->signIn();
@@ -65,6 +73,17 @@ class CreateQuestionTest extends TestCase
         $question = create('App\Question');
         $this->put("/questions/{$question->id}", $attributes);
 
-        $this->assertDatabaseHas('questions',$attributes);
+        $this->assertDatabaseHas('questions', $attributes);
+    }
+
+    /** @test */
+    function an_authenticated_user_may_delete_questions()
+    {
+        $this->signIn();
+        $question = create('App\Question', [
+            'user_id' => create('App\User')->id,
+            'title'   => 'question title']);
+        $this->delete("/questions/{$question->id}");
+        $this->assertDatabaseMissing('questions', ['title' => 'question title']);
     }
 }

@@ -12,7 +12,7 @@ class QuestionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('create', 'store','update');
+        $this->middleware('auth')->only('create', 'store', 'update','destroy');
     }
 
     /**
@@ -94,6 +94,7 @@ class QuestionsController extends Controller
      */
     public function destroy(Question $question)
     {
-        //
+        $question->delete();
+        return redirect('/questions')->with('success', 'Your question has been deleted.');
     }
 }
