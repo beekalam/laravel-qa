@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AskQuestionRequest;
 use App\Question;
-use Illuminate\Http\Request;
 
 class QuestionsController extends Controller
 {
@@ -13,7 +12,7 @@ class QuestionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->only('create','store');
+        $this->middleware('auth')->only('create', 'store','update');
     }
 
     /**
@@ -25,7 +24,7 @@ class QuestionsController extends Controller
     {
         // \DB::enableQueryLog();
         $questions = Question::with('user')->latest()->paginate(5);
-        return view('questions.index',compact('questions'));
+        return view('questions.index', compact('questions'));
         // dd(\DB::getQueryLog());
     }
 
@@ -48,8 +47,8 @@ class QuestionsController extends Controller
      */
     public function store(AskQuestionRequest $request)
     {
-        $request->user()->questions()->create($request->only('title','body'));
-        return redirect()->route('questions.index')->with('success','Your question has been submitted.');
+        $request->user()->questions()->create($request->only('title', 'body'));
+        return redirect()->route('questions.index')->with('success', 'Your question has been submitted.');
     }
 
     /**
@@ -71,7 +70,7 @@ class QuestionsController extends Controller
      */
     public function edit(Question $question)
     {
-        //
+        return view('questions.edit', compact('question'));
     }
 
     /**
@@ -81,9 +80,10 @@ class QuestionsController extends Controller
      * @param \App\Question            $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(AskQuestionRequest $request, Question $question)
     {
-        //
+        $question->update($request->only('title', 'body'));
+        return redirect()->route('questions.index')->with('success', 'Your question has been updated.');
     }
 
     /**

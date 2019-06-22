@@ -17,11 +17,19 @@ class CreateQuestionTest extends TestCase
     }
 
     /** @test */
+    function guests_may_not_update_questions()
+    {
+        $question = create('App\Question', ['user_id' => create('App\User')->id]);
+        $this->put("/questions/{$question->id}", ['title' => 'title', 'body' => 'body'])
+             ->assertRedirect('/login');
+    }
+
+    /** @test */
     function a_question_requires_a_body()
     {
         $this->signIn();
-        $this->post('/questions',['title' => 'title'])
-            ->assertSessionHasErrors('body');
+        $this->post('/questions', ['title' => 'title'])
+             ->assertSessionHasErrors('body');
     }
 
 
@@ -29,7 +37,7 @@ class CreateQuestionTest extends TestCase
     function a_question_requires_a_title()
     {
         $this->signIn();
-        $this->post('/questions',['body' => 'body'])
+        $this->post('/questions', ['body' => 'body'])
              ->assertSessionHasErrors('title');
     }
 
@@ -44,5 +52,19 @@ class CreateQuestionTest extends TestCase
         $this->post('/questions', $attributes);
 
         $this->assertDatabaseHas('questions', $attributes);
+    }
+
+    /** @test */
+    function an_authenticated_user_may_update_questions()
+    {
+        $this->signIn();
+        $attributes = [
+            'title' => 'new title',
+            'body'  => 'new body'
+        ];
+        $question = create('App\Question');
+        $this->put("/questions/{$question->id}", $attributes);
+
+        $this->assertDatabaseHas('questions',$attributes);
     }
 }
