@@ -50,6 +50,7 @@ class User extends Authenticatable
 
     public function getAvatarAttribute()
     {
+        return "";
         $email = "someone@somewhere.com";
         $default = "https://www.somewhere.com/homestar.jpg";
         $size = 49;
