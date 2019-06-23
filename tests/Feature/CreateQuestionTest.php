@@ -83,7 +83,7 @@ class CreateQuestionTest extends TestCase
         $this->signIn();
         $question = create('App\Question', [
             'user_id' => auth()->id(),
-            'answers' => 0,
+            'answers_count' => 0,
             'title'   => 'question title']);
         $this->delete("/questions/{$question->id}");
         $this->assertDatabaseMissing('questions', ['title' => 'question title']);
