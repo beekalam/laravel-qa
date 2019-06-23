@@ -68,9 +68,10 @@ class CreateQuestionTest extends TestCase
         $this->signIn();
         $attributes = [
             'title' => 'new title',
-            'body'  => 'new body'
+            'body'  => 'new body',
         ];
-        $question = create('App\Question');
+
+        $question = create('App\Question', ['user_id' => auth()->id()]);
         $this->put("/questions/{$question->id}", $attributes);
 
         $this->assertDatabaseHas('questions', $attributes);
@@ -81,9 +82,27 @@ class CreateQuestionTest extends TestCase
     {
         $this->signIn();
         $question = create('App\Question', [
-            'user_id' => create('App\User')->id,
+            'user_id' => auth()->id(),
+            'answers' => 0,
             'title'   => 'question title']);
         $this->delete("/questions/{$question->id}");
         $this->assertDatabaseMissing('questions', ['title' => 'question title']);
+    }
+
+    /** @test */
+    function a_user_can_edit_or_delete_his_question_only()
+    {
+        $this->signIn();
+        $question = create('App\Question', ['user_id' => create('App\User')->id]);
+        $uri = '/questions/' . $question->id;
+
+        $this->get($uri . '/edit')
+             ->assertStatus(403);
+
+        $this->put($uri, ['title' => 'new title', 'body' => 'new body'])
+             ->assertStatus(403);
+
+        $this->delete($uri)
+             ->assertStatus(403);
     }
 }

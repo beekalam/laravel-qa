@@ -9,7 +9,8 @@
                         <div class="d-flex align-items-center">
                             <h2>All Questions</h2>
                             <div class="ml-auto">
-                                <a href="{{ route('questions.create') }}" class="btn btn-outline-secondary">Ask Question</a>
+                                <a href="{{ route('questions.create') }}" class="btn btn-outline-secondary">Ask
+                                    Question</a>
                             </div>
                         </div>
                     </div>
@@ -34,18 +35,27 @@
                                 </div>
                                 <div class="media-body">
                                     <div class="d-flex align-items-center">
-                                        <h3 class="mt-0"> <a href="{{ $question->url }}"> {{ $question->title }} </a> </h3>
-                                       <div class="ml-auto">
-                                           <a href="{{ route('questions.edit', $question->id) }}" class="btn btn-sm btn-outline-info">Edit</a>
-                                           <form action="{{ route('questions.destroy', $question->id) }}"
-                                                 class="form-delete"
-                                                 method="post">
-                                               @csrf
-                                               @method('DELETE')
-                                               <button type="submit" class="btn btn-sm btn-outline-danger" onClick="return confirm('Are you sure?')">Delete</button>
+                                        <h3 class="mt-0"><a href="{{ $question->url }}"> {{ $question->title }} </a>
+                                        </h3>
+                                        <div class="ml-auto">
+                                            @can('update',$question)
+                                                <a href="{{ route('questions.edit', $question->id) }}"
+                                                   class="btn btn-sm btn-outline-info">Edit</a>
+                                            @endcan
 
-                                           </form>
-                                       </div>
+                                            @can('delete',$question)
+                                                <form action="{{ route('questions.destroy', $question->id) }}"
+                                                      class="form-delete"
+                                                      method="post">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                            onClick="return confirm('Are you sure?')">Delete
+                                                    </button>
+
+                                                </form>
+                                            @endcan
+                                        </div>
                                     </div>
                                     <p class="lead">
                                         Asked by

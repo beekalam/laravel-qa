@@ -24,16 +24,20 @@ class ReadQuestionsTest extends TestCase
     {
         $this->get('/questions')
              ->assertSee($this->question->title)
-             ->assertSee(str_limit($this->question->title, 250));
+             ->assertSee(str_limit($this->question->title, 200));
     }
 
     /** @test */
     function a_user_can_view_a_single_question()
     {
         $this->get('/questions/' . $this->question->slug)
-            ->assertSee($this->question->title)
-            ->assertSee(\Parsedown::instance()->text($this->question->body));
+             ->assertSee($this->question->title)
+             ->assertSee(\Parsedown::instance()->text($this->question->body));
     }
+
+
+
+
 
 
 }
