@@ -8,6 +8,17 @@ class Answer extends Model
 {
     protected $guarded = [];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($answer) {
+            $answer->question->increment('answers_count');
+            $answer->question->save();
+        });
+
+    }
+
     public function question()
     {
         return $this->belongsTo(Question::class);

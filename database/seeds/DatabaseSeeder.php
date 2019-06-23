@@ -1,5 +1,6 @@
 <?php
 
+use App\Answer;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,13 +14,16 @@ class DatabaseSeeder extends Seeder
     {
 
         factory('App\User')->create([
-            'email' => 'beekalam@gmail.com',
+            'email'    => 'beekalam@gmail.com',
             'password' => bcrypt('secret')
         ]);
 
         factory('App\User', 3)->create()->each(function ($user) {
             $user->questions()
-                 ->saveMany(factory('App\Question', rand(1, 5))->make());
+                 ->saveMany(factory('App\Question', rand(1, 5))->make())
+                 ->each(function ($q) {
+                     $q->answers()->saveMany(factory(Answer::class, rand(1, 5))->make());
+                 });
         });
 
 
