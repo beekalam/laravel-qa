@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -54,6 +53,11 @@ class User extends Authenticatable
         $email = "someone@somewhere.com";
         $default = "https://www.somewhere.com/homestar.jpg";
         $size = 49;
-        return "https://www.gravatar.com/avatar/" . md5( strtolower( trim( $email ) ) ) . "?d=" . urlencode( $default ) . "&s=" . $size;
+        return "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "?d=" . urlencode($default) . "&s=" . $size;
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Question::class,'favorites')->withTimestamps();
     }
 }

@@ -1,7 +1,10 @@
 <?php
 
 use App\Answer;
+use App\Question;
+use App\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,6 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        DB::table('answers')->delete();
+        DB::table('users')->delete();
+        DB::table('questions')->delete();
+        DB::table('favorites')->delete();
 
         factory('App\User')->create([
             'email'    => 'beekalam@gmail.com',
@@ -26,8 +33,17 @@ class DatabaseSeeder extends Seeder
                  });
         });
 
+        $users = User::pluck('id')->all();
+        $numberOfUsers = count($users);
+        foreach(Question::all() as $question){
+           for($i = 0; $i < rand(0, $numberOfUsers); $i++){
+               $user = $users[$i];
+               $question->favorites()->attach($user);
+           }
+        }
 
-        // factory('App\User',3)->create();
-        // factory('App\Question',10)->create();
+
+
+
     }
 }
