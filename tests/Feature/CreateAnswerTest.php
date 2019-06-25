@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Question;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -50,6 +51,34 @@ class CreateAnswerTest extends TestCase
         $this->put("/questions/{$question->id}/answers/{$another_answer->id}", [
             'body' => 'body changed'
         ])->assertStatus(403);
+    }
+
+    /** @test */
+    function when_answer_is_created_the_answers_count_column_in_questions_should_increase()
+    {
+        $this->signIn();
+        $question = create('App\Question');
+        $answer = create('App\Answer', [
+            'question_id' => $question->id
+        ]);
+
+        $this->assertEquals(1, $question->fresh()->answers_count);
+    }
+
+    /** @test */
+    function when_answer_is_deleted_if_its_the_best_answer_the_best_answer_id_column_in_question_should_set_to_null()
+    {
+        $this->signIn();
+        $question = create('App\Question', ['user_id' => auth()->id()]);
+        $answer = create('App\Answer', [
+            'user_id'     => auth()->id(),
+            'question_id' => $question->id
+        ]);
+        $question->best_answer_id = $answer->id;
+        $question->save();
+
+        $this->delete("/questions/{$question->id}/answers/{$answer->id}");
+        $this->assertNull($question->fresh()->best_answer_id);
     }
 
 
