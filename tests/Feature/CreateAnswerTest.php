@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Question;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -78,6 +77,33 @@ class CreateAnswerTest extends TestCase
         $question->save();
 
         $this->delete("/questions/{$question->id}/answers/{$answer->id}");
+        $this->assertNull($question->fresh()->best_answer_id);
+    }
+
+    /** @test */
+    function when_an_answer_is_selected_as_best_answer_questions_best_answer_id_should_equal_answer_id()
+    {
+        $this->signIn();
+        $question = create('App\Question', ['user_id' => auth()->id()]);
+        $answer = create('App\Answer', [
+            'user_id'     => auth()->id(),
+            'question_id' => $question->id
+        ]);
+        $this->post(route('answers.accept', $answer->id));
+        $this->assertEquals($answer->id, $question->fresh()->best_answer_id);
+    }
+
+    /** @test */
+    function the_user_who_created_a_question_can_only_choose_the_best_answer()
+    {
+        $this->signIn();
+        $question = create('App\Question', ['user_id' => create('App\User')->id]);
+        $answer = create('App\Answer', [
+            'user_id'     => create('App\User')->id,
+            'question_id' => $question->id
+        ]);
+
+        $this->post(route('answers.accept', $answer->id));
         $this->assertNull($question->fresh()->best_answer_id);
     }
 
