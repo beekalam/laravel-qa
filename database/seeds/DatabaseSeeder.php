@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->delete();
         DB::table('questions')->delete();
         DB::table('favorites')->delete();
+        DB::table('votables')->delete();
 
         factory('App\User')->create([
             'email'    => 'beekalam@gmail.com',
@@ -35,15 +36,29 @@ class DatabaseSeeder extends Seeder
 
         $users = User::pluck('id')->all();
         $numberOfUsers = count($users);
-        foreach(Question::all() as $question){
-           for($i = 0; $i < rand(0, $numberOfUsers); $i++){
-               $user = $users[$i];
-               $question->favorites()->attach($user);
-           }
+        foreach (Question::all() as $question) {
+            for ($i = 0; $i < rand(0, $numberOfUsers); $i++) {
+                $user = $users[$i];
+                $question->favorites()->attach($user);
+            }
         }
 
 
-
+        $users = User::all();
+        $numberOfUsers = $users->count();
+        $votes = [-1, 1];
+        foreach (Question::all() as $question) {
+            for ($i = 0; $i < rand(1, $numberOfUsers); $i++) {
+                $user = $users[$i];
+                $user->voteQuestion($question, $votes[rand(0, 1)]);
+            }
+        }
+        foreach (Answer::all() as $answer) {
+            for ($i = 0; $i < rand(1, $numberOfUsers); $i++) {
+                $user = $users[$i];
+                $user->voteAnswer($answer, $votes[rand(0, 1)]);
+            }
+        }
 
     }
 }
